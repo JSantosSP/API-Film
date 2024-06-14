@@ -16,7 +16,8 @@ async def get_movie_details(movie_id: str):
     
     combined_data = {
         "title": tmdb_data["title"],
-        "overview": tmdb_data["overview"]
+        "overview": tmdb_data["overview"],
+        "omdb": omdb_data
     }
     
     return combined_data
