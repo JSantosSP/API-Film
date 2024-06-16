@@ -2,11 +2,11 @@ from fastapi import APIRouter, HTTPException
 from app.services.tmdb_service import get_tmdb_movie_details
 from app.services.omdb_service import get_omdb_movie_details
 from app.services.chatgpt_service import ask_chatgpt
-from app.schemas import Movie
+from app.schemas import MovieBase
 
 router = APIRouter()
 
-@router.get("/movie/{movie_id}", response_model=Movie)
+@router.get("/movie/{movie_id}", response_model=MovieBase)
 async def get_movie_details(movie_id: str):
     tmdb_data = await get_tmdb_movie_details(movie_id)
     if "status_code" in tmdb_data and tmdb_data["status_code"] == 34:
