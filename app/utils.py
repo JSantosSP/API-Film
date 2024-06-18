@@ -16,8 +16,8 @@ def get_tmdb_movie_details(tmdb_id):
         return response.json()
     return None
 
-def get_omdb_movie_details(imdb_id):
-    url = f"http://www.omdbapi.com/?i={imdb_id}&apikey={OMDB_API_KEY}"
+def get_omdb_movie_details(imdb_id, type):
+    url = f"http://www.omdbapi.com/?{type}={imdb_id}&apikey={OMDB_API_KEY}"
     print(url)
     response = requests.get(url)
     if response.status_code == 200:
@@ -101,7 +101,10 @@ def insert_movie_into_datos_json(movie_data):
 def get_and_insert_movie_details(tmdb_id: str, session: Session):
     tmdb_data = get_tmdb_movie_details(tmdb_id)
     print(f"API TMDB película: {tmdb_data['imdb_id']}")
-    omdb_data = get_omdb_movie_details(tmdb_data["imdb_id"])
+    if tmdb_data['imdb_id'] == "":
+        get_omdb_movie_details(tmdb_data["original_title"],"t")
+    else:
+        omdb_data = get_omdb_movie_details(tmdb_data["imdb_id"],"i")
     print(f"API OMDb película: {omdb_data['Poster']}")
     
     if tmdb_data and omdb_data:
