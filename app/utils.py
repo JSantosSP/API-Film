@@ -117,7 +117,7 @@ def get_and_insert_movie_details(tmdb_id: str, session: Session):
             "vote_average": tmdb_data["vote_average"]
         }
         
-        insert_movie_into_datos_json(movie_data)
+        insert_movie_into_db(session, movie_data)
         
         return movie_data
     
