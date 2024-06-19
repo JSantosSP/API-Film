@@ -69,37 +69,6 @@ def insert_movie_into_db(session: Session, movie_data):
     session.add(movie)
     session.commit()
 
-def insert_movie_into_datos_json(movie_data):
-    movie_new = {
-        "tmdb_id":movie_data["tmdb_id"],
-        "original_title":movie_data["original_title"],
-        "overview":movie_data["overview"],
-        "poster":movie_data["Poster"],
-        "imdb_id":movie_data["imdb_id"],
-        "vote_average":movie_data["vote_average"],
-        "genero":movie_data["genero"]
-    }
-
-    json_file_path = os.path.join(os.path.dirname(__file__), 'db/datos.json')
-    print(json_file_path)
-    
-    movies_data = []
-    with open(json_file_path, 'r', encoding='utf-8') as file:
-        for line in file:
-            try:
-                movie = json.loads(line.strip())
-                movies_data.append(movie)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON in line: {line}. Error: {e}")
-
-    # Añadir el nuevo objeto
-    movies_data.append(movie_new)
-
-    # Escribir de vuelta al archivo, cada objeto en una línea separada
-    with open(json_file_path, 'w', encoding='utf-8') as file:
-        for movie in movies_data:
-            file.write(json.dumps(movie) + '\n')
-
 def get_and_insert_movie_details(tmdb_id: str, session: Session):
     tmdb_data = get_tmdb_movie_details(tmdb_id)
     print(f"API TMDB película: {tmdb_data['imdb_id']}")

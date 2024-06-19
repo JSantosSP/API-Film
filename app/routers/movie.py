@@ -1,28 +1,23 @@
 from fastapi import APIRouter, HTTPException
-from app.services.tmdb_service import get_tmdb_movie_details
-from app.services.omdb_service import get_omdb_movie_details
+from app.db.database import get_movie_details
 from app.services.chatgpt_service import ask_chatgpt
-from app.schemas import MovieBase
+from app.schemas import MovieRequest
 
 router = APIRouter()
 
-@router.get("/movie/{movie_id}", response_model=MovieBase)
-async def get_movie_details(movie_id: str):
-    tmdb_data = await get_tmdb_movie_details(movie_id)
-    if "status_code" in tmdb_data and tmdb_data["status_code"] == 34:
+
+
+@router.get("/movies/{movie_id}")
+async def get_movie_info(movie_id: str):
+    movie = get_movie_details(movie_id)
+    if movie is None:
         raise HTTPException(status_code=404, detail="Movie not found")
-    
-    omdb_data = await get_omdb_movie_details(tmdb_data["title"])
-    
-    combined_data = {
-        "title": tmdb_data["title"],
-        "overview": tmdb_data["overview"],
-        "omdb": omdb_data
-    }
-    
-    return combined_data
+    return movie
 
 @router.post("/ask")
-async def ask_question(question: str):
-    answer = await ask_chatgpt(question)
-    return {"answer": answer}
+async def ask_question(moviesReq: MovieRequest):
+    movies_i_like = moviesReq.movies_i_like
+    movies_i_dont_like = moviesReq.movies_i_dont_like
+    recommendations = await ask_chatgpt(movies_i_like, movies_i_dont_like)
+    print(recommendations)
+    return {"answer": recommendations}
