@@ -63,7 +63,8 @@ def insert_movie_into_db(session: Session, movie_data):
         overview=movie_data["overview"],
         poster=movie_data["Poster"],
         imdb_id=movie_data["imdb_id"],
-        vote_average=movie_data["vote_average"]
+        vote_average=movie_data["vote_average"],
+        genero=movie_data["genero"]
     )
     session.add(movie)
     session.commit()
@@ -75,7 +76,8 @@ def insert_movie_into_datos_json(movie_data):
         "overview":movie_data["overview"],
         "poster":movie_data["Poster"],
         "imdb_id":movie_data["imdb_id"],
-        "vote_average":movie_data["vote_average"]
+        "vote_average":movie_data["vote_average"],
+        "genero":movie_data["genero"]
     }
 
     json_file_path = os.path.join(os.path.dirname(__file__), 'db/datos.json')
@@ -108,13 +110,15 @@ def get_and_insert_movie_details(tmdb_id: str, session: Session):
     print(f"API OMDb película: {omdb_data['Poster']}")
     
     if tmdb_data and omdb_data:
+        genres_concatenated = "; ".join([genres["name"] for genres in tmdb_data["genres"]])
         movie_data = {
             "tmdb_id": tmdb_data["id"],
             "original_title": tmdb_data["original_title"],
             "overview": tmdb_data["overview"],
             "Poster": omdb_data["Poster"],
             "imdb_id": tmdb_data["imdb_id"],
-            "vote_average": tmdb_data["vote_average"]
+            "vote_average": tmdb_data["vote_average"],
+            "genero":genres_concatenated
         }
         
         insert_movie_into_db(session, movie_data)
@@ -154,7 +158,7 @@ def process_movies_with_high_popularity(session: Session):
         tmdb_id = str(movie.get("id"))
         original_title = str(movie.get("original_title"))
         max += 1
-        if max >= 1000:
+        if max >= (1000-428):
             print(max)
             break
         else:

@@ -12,6 +12,7 @@ class Movie(Base):
     poster = Column(String)
     imdb_id = Column(String)
     vote_average = Column(Float)
+    genero = Column(String)
 
 class Limite(Base):
     __tablename__ = "limite"

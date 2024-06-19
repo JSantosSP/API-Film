@@ -7,3 +7,4 @@ class MovieBase(BaseModel):
     poster: str
     imdb_id: str
     vote_average: float
+    genero: str
