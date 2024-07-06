@@ -127,8 +127,7 @@ def process_movies_with_high_popularity(session: Session):
         tmdb_id = str(movie.get("id"))
         original_title = str(movie.get("original_title"))
         max += 1
-        if max >= (1000-428):
-            print(max)
+        if max >= (1000-998):
             break
         else:
             print("antes de get_and_insert")
@@ -145,4 +144,5 @@ def process_movies_with_high_popularity(session: Session):
     with open(json_file_path, 'w', encoding='utf-8') as file:
         for movie in movies_data:
             file.write(json.dumps(movie) + '\n')
+    return max
 

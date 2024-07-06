@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from app.db.database import get_movie_details
-from app.services.chatgpt_service import ask_chatgpt
-from app.schemas import MovieRequest
+from app.db.database import get_movie_details, addFilm
+from app.schemas import MovieRequest, AddFilm
 
 router = APIRouter()
 
@@ -16,8 +15,13 @@ async def get_movie_info(movie_id: str):
 
 @router.post("/ask")
 async def ask_question(moviesReq: MovieRequest):
-    movies_i_like = moviesReq.movies_i_like
-    movies_i_dont_like = moviesReq.movies_i_dont_like
-    recommendations = await ask_chatgpt(movies_i_like, movies_i_dont_like)
-    print(recommendations)
-    return {"answer": recommendations}
+    
+    return {"answer": None}
+
+@router.post("/addFilm")
+async def ask_question(addFilmReq: AddFilm):
+    if addFilmReq.passw == "1945":
+        nfilms = addFilm()
+    else:
+        raise HTTPException(status_code=401, detail="Forbbiden")
+    return {"addfilms": nfilms}

@@ -10,22 +10,17 @@ from app.utils import process_movies_with_high_popularity  # Asegúrate de impor
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+Base.metadata.create_all(bind=engine)
 
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
-    
-    # Inicializar la sesión de SQLAlchemy
+def addFilm():
     session = SessionLocal()
-    
     try:
-        # Llamar a la función para procesar películas con popularidad alta
-        #process_movies_with_high_popularity(session)
-        print("f")
+        nfilms = process_movies_with_high_popularity(session)
     finally:
         # Cerrar la sesión de SQLAlchemy al finalizar
         session.close()
-        print("finalizado")
+    return nfilms
 
 def get_movie_info(movie_id):
     session = SessionLocal()
