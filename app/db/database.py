@@ -45,7 +45,6 @@ def get_movie_details(movie_id):
 
     # Realizar la consulta a la base de datos
     movie = session.query(Movie).filter_by(tmdb_id=movie_id).first()
-
     # Cerrar la sesión
     session.close()
 

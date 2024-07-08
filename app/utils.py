@@ -127,7 +127,7 @@ def process_movies_with_high_popularity(session: Session):
         tmdb_id = str(movie.get("id"))
         original_title = str(movie.get("original_title"))
         max += 1
-        if max >= (1000-998):
+        if max >= (1000):
             break
         else:
             print("antes de get_and_insert")
