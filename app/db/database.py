@@ -1,5 +1,4 @@
-import json
-import os
+import random
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -22,42 +21,29 @@ def addFilm():
         session.close()
     return nfilms
 
-def get_movie_info(movie_id):
+def get_movie_details():
     session = SessionLocal()
+    
+    try:
+        # Filtrar películas cuyo género no sea nulo
+        movies = session.query(Movie).filter(Movie.genero.isnot(None)).all()
 
-    # Realizar la consulta a la base de datos
-    movie = session.query(Movie.original_title, Movie.overview).filter_by(tmdb_id=movie_id).first()
+        # Seleccionar una película aleatoria de la lista
+        movie = random.choice(movies) if movies else None
 
-    # Cerrar la sesión
-    session.close()
-
-    # Devolver el resultado
-    if movie:
-        return {
-            "original_title": movie.original_title,
-            "overview": movie.overview
-        }
-    else:
-        return None
-
-def get_movie_details(movie_id):
-    session = SessionLocal()
-
-    # Realizar la consulta a la base de datos
-    movie = session.query(Movie).filter_by(tmdb_id=movie_id).first()
-    # Cerrar la sesión
-    session.close()
-
-    # Devolver el resultado
-    if movie:
-        return {
-            "tmdb_id": movie.tmdb_id,
-            "original_title": movie.original_title,
-            "overview": movie.overview,
-            "poster": movie.poster,
-            "imdb_id": movie.imdb_id,
-            "vote_average": movie.vote_average,
-            "genero": movie.genero
-        }
-    else:
-        return None
+        # Devolver el resultado
+        if movie:
+            return {
+                "tmdb_id": movie.tmdb_id,
+                "original_title": movie.original_title,
+                "overview": movie.overview,
+                "poster": movie.poster,
+                "imdb_id": movie.imdb_id,
+                "vote_average": movie.vote_average,
+                "genero": movie.genero
+            }
+        else:
+            return None
+    finally:
+        # Cerrar la sesión
+        session.close()

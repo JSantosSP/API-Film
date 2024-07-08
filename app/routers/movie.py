@@ -6,9 +6,9 @@ router = APIRouter()
 
 
 
-@router.get("/movies/{movie_id}")
-async def get_movie_info(movie_id: str):
-    movie = get_movie_details(movie_id)
+@router.get("/movies")
+async def get_movie_info():
+    movie = get_movie_details()
     if movie is None:
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
