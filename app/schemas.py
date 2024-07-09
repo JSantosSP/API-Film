@@ -10,8 +10,7 @@ class MovieBase(BaseModel):
     genero: str
 
 class MovieRequest(BaseModel):
-    movies_i_like: list[str]
-    movies_i_dont_like: list[str]
+    movie: str
 
 class AddFilm(BaseModel):
     passw: str

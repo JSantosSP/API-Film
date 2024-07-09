@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from app.db.database import get_movie_details, addFilm
+from app.db.database import get_movie_details, addFilm, get_movies_by_word_and_genres
 from app.schemas import MovieRequest, AddFilm
 
 router = APIRouter()
@@ -13,10 +13,11 @@ async def get_movie_info():
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie
 
-@router.post("/ask")
-async def ask_question(moviesReq: MovieRequest):
-    
-    return {"answer": None}
+@router.post("/moviesList")
+async def randomList(moviesReq: MovieRequest):
+    movie = moviesReq.movie
+    moviesList = get_movies_by_word_and_genres(movie)
+    return moviesList
 
 @router.post("/addFilm")
 async def ask_question(addFilmReq: AddFilm):
