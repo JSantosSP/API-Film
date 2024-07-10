@@ -2,9 +2,7 @@ import requests
 import os
 import json
 import time
-from sqlalchemy.orm import Session
-from app.models import Movie, Limite
-from datetime import date
+from app.models import Movie
 from app.config import TMDB_API_KEY, OMDB_API_KEY
 
 def get_tmdb_movie_details(tmdb_id):
@@ -25,51 +23,27 @@ def get_omdb_movie_details(imdb_id, type):
         return response.json()
     return None
 
-def update_or_insert_limite(session: Session):
-    session = session
-    today = date.today()
+
+def insert_movie_into_json(movie_data):
+    filename = 'movies_data.json'
     
-    try:
-        # Query the existing record for today's date
-        limite_record = session.query(Limite).filter(Limite.fecha == today).first()
-        
-        if limite_record:
-            if limite_record.ctOMDb == 1000:
-                return "MaximRequest"
-            else:
-                # If a record exists for today, update ctOMDb and leave ctOpenIA unchanged
-                limite_record.ctOMDb += 1
-        else:
-            # If no record exists for today, create a new one with ctOpenIA=0 and ctOMDb=1
-            new_record = Limite(fecha=today, ctOpenIA=0, ctOMDb=1)
-            session.add(new_record)
-        
-        # Commit the transaction
-        session.commit()
-    except Exception as e:
-        print(f"Error película: {e}")
-        # Rollback in case of any error
-        session.rollback()
-        raise e
-    finally:
-        # Close the session
-        session.close()
-    return None
+    # Verificar si el archivo existe
+    if not os.path.exists(filename):
+        with open(filename, 'w') as file:
+            json.dump([], file)  # Inicializar el archivo con una lista vacía si no existe
+    
+    # Cargar los datos actuales del archivo
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    
+    # Agregar el nuevo objeto movie_data a la lista de objetos
+    data.append(movie_data)
+    
+    # Escribir los datos actualizados de vuelta al archivo
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)  # Escribir los datos con formato JSON indentado
 
-def insert_movie_into_db(session: Session, movie_data):
-    movie = Movie(
-        tmdb_id=movie_data["tmdb_id"],
-        original_title=movie_data["original_title"],
-        overview=movie_data["overview"],
-        poster=movie_data["Poster"],
-        imdb_id=movie_data["imdb_id"],
-        vote_average=movie_data["vote_average"],
-        genero=movie_data["genero"]
-    )
-    session.add(movie)
-    session.commit()
-
-def get_and_insert_movie_details(tmdb_id: str, session: Session):
+def get_and_insert_movie_details(tmdb_id: str):
     tmdb_data = get_tmdb_movie_details(tmdb_id)
     print(f"API TMDB película: {tmdb_data['imdb_id']}")
     if tmdb_data['imdb_id'] == "":
@@ -90,14 +64,14 @@ def get_and_insert_movie_details(tmdb_id: str, session: Session):
             "genero":genres_concatenated
         }
         
-        insert_movie_into_db(session, movie_data)
+        insert_movie_into_json(movie_data)
         
         return movie_data
     
     return None
 
 
-def process_movies_with_high_popularity(session: Session):
+def process_movies_with_high_popularity():
 
     json_file_path = os.path.join(os.path.dirname(__file__), 'movie_ids_05_15_2024.json')
     
@@ -132,7 +106,7 @@ def process_movies_with_high_popularity(session: Session):
         else:
             print("antes de get_and_insert")
             # Llamar a get_movie_details para obtener y almacenar los detalles en la base de datos
-            movie_data_last = get_and_insert_movie_details(tmdb_id, session)
+            movie_data_last = get_and_insert_movie_details(tmdb_id)
             for movie in movies_data:
                 if movie['id'] == movie_data_last['tmdb_id']:
                     movie['popularity'] = 0
@@ -145,4 +119,25 @@ def process_movies_with_high_popularity(session: Session):
         for movie in movies_data:
             file.write(json.dumps(movie) + '\n')
     return max
+
+def process_list(movies_list):
+    filename = 'movies_data.json'
+    
+    # Verificar si el archivo existe
+    if not os.path.exists(filename):
+        with open(filename, 'w') as file:
+            json.dump([], file)  # Inicializar el archivo con una lista vacía si no existe
+    
+    # Cargar los datos actuales del archivo
+    with open(filename, 'r') as file:
+        data = json.load(file)
+    
+    # Agregar los nuevos datos a la lista existente
+    data.extend(movies_list)
+    
+    # Escribir los datos actualizados de vuelta al archivo
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)  # Escribir los datos con formato JSON indentado
+
+
 

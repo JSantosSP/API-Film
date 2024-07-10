@@ -11,6 +11,3 @@ class MovieBase(BaseModel):
 
 class MovieRequest(BaseModel):
     movie: str
-
-class AddFilm(BaseModel):
-    passw: str

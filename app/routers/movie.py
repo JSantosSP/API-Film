@@ -1,10 +1,12 @@
 from fastapi import APIRouter, HTTPException
-from app.db.database import get_movie_details, addFilm, get_movies_by_word_and_genres
-from app.schemas import MovieRequest, AddFilm
+from app.db.database import get_movie_details, addFilm, get_movies_by_word_and_genres, getAll
+from app.schemas import MovieRequest
 
 router = APIRouter()
 
-
+@router.get("/all")
+async def get_all_db():
+    getAll()
 
 @router.get("/movies")
 async def get_movie_info():
@@ -19,10 +21,7 @@ async def randomList(moviesReq: MovieRequest):
     moviesList = get_movies_by_word_and_genres(movie)
     return moviesList
 
-@router.post("/addFilm")
-async def ask_question(addFilmReq: AddFilm):
-    if addFilmReq.passw == "1945":
-        nfilms = addFilm()
-    else:
-        raise HTTPException(status_code=401, detail="Forbbiden")
+@router.get("/addFilm")
+async def ask_question():
+    nfilms = addFilm()
     return {"addfilms": nfilms}
